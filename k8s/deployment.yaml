@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: immo-app
-        image: sasow/immo-app:1.0.0   # ← Ce tag sera mis à jour par Jenkins
+        image: sasow/immo-app:1.0.0
         imagePullPolicy: Always
         ports:
         - containerPort: 80
