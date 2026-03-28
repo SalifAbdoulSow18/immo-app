@@ -18,3 +18,8 @@ immo-app/
 │   ├── App.vue                 # Composant racine
 │   └── main.js                 # Point d'entrée 
 └── index.html
+
+
+
+# UNE SEULE COMMANDE sur le VPS
+kubectl apply -f https://raw.githubusercontent.com/VOTRE_USERNAME_GITHUB/immo-app/main/argocd/application.yaml

@@ -6,6 +6,11 @@ pipeline {
         DOCKER_HUB_REPO = 'immo-app'
         IMAGE_NAME = "${DOCKER_HUB_USERNAME}/${DOCKER_HUB_REPO}"
         K8S_NAMESPACE = 'immo-app'
+        
+        // Versioning
+        VERSION_FILE = 'VERSION'
+        GIT_COMMIT = "${env.GIT_COMMIT}"
+        BUILD_DATE = sh(script: "date -u +'%Y-%m-%dT%H:%M:%SZ'", returnStdout: true).trim()
     }
     
     stages {
@@ -13,20 +18,33 @@ pipeline {
             steps {
                 echo "📦 Récupération du code..."
                 git branch: 'main', 
-                    url: 'https://github.com/SalifAbdoulSow18/immo-app.git',
+                    url: 'https://github.com/sasow/immo-app.git',
                     credentialsId: 'github-credentials'
                 echo "✅ Code récupéré - Commit: ${env.GIT_COMMIT}"
+            }
+        }
+        
+        stage('Read Version') {
+            steps {
+                script {
+                    def versionFile = readFile('VERSION').trim()
+                    env.APP_VERSION = versionFile
+                    echo "📌 Version: ${env.APP_VERSION}"
+                }
             }
         }
         
         stage('Build Docker Image') {
             steps {
                 echo "🐳 Build de l'image Docker..."
-                sh """
-                    docker build -t ${IMAGE_NAME}:${env.GIT_COMMIT} .
-                    docker tag ${IMAGE_NAME}:${env.GIT_COMMIT} ${IMAGE_NAME}:latest
-                """
-                echo "✅ Image buildée: ${IMAGE_NAME}:${env.GIT_COMMIT}"
+                script {
+                    sh """
+                        docker build -t ${IMAGE_NAME}:${env.APP_VERSION} .
+                        docker tag ${IMAGE_NAME}:${env.APP_VERSION} ${IMAGE_NAME}:latest
+                        docker tag ${IMAGE_NAME}:${env.APP_VERSION} ${IMAGE_NAME}:${env.GIT_COMMIT}
+                    """
+                }
+                echo "✅ Image buildée: ${IMAGE_NAME}:${env.APP_VERSION}"
             }
         }
         
@@ -36,8 +54,11 @@ pipeline {
                 withCredentials([string(credentialsId: 'docker-hub-password', variable: 'DOCKER_PASS')]) {
                     sh """
                         echo "${DOCKER_PASS}" | docker login -u ${DOCKER_HUB_USERNAME} --password-stdin
-                        docker push ${IMAGE_NAME}:${env.GIT_COMMIT}
+                        
+                        docker push ${IMAGE_NAME}:${env.APP_VERSION}
                         docker push ${IMAGE_NAME}:latest
+                        docker push ${IMAGE_NAME}:${env.GIT_COMMIT}
+                        
                         docker logout
                     """
                 }
@@ -45,22 +66,41 @@ pipeline {
             }
         }
         
-        stage('Deploy to Kubernetes') {
+        stage('Update Git Manifests') {
             steps {
-                echo "☸️ Déploiement sur Kubernetes..."
-                sh """
-                    # Créer le namespace s'il n'existe pas
-                    kubectl create namespace ${K8S_NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -
-                    
-                    # Appliquer les manifests
-                    kubectl apply -f k8s/namespace.yaml
-                    kubectl apply -f k8s/deployment.yaml
-                    kubectl apply -f k8s/service.yaml
-                    
-                    # Attendre le déploiement
-                    kubectl rollout status deployment/immo-app -n ${K8S_NAMESPACE} --timeout=120s
-                """
-                echo "✅ Déploiement terminé"
+                echo "📝 Mise à jour du tag dans les manifests Git..."
+                script {
+                    sh """
+                        # Mettre à jour UNIQUEMENT le tag dans deployment.yaml
+                        sed -i "s|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${env.APP_VERSION}|" k8s/deployment.yaml
+                        
+                        # Vérifier le changement
+                        echo "Nouvelle image:"
+                        grep "image:" k8s/deployment.yaml
+                        
+                        # Commit et push sur GitHub
+                        git config user.email "jenkins@immoapp.com"
+                        git config user.name "Jenkins CI"
+                        git add k8s/deployment.yaml
+                        git commit -m "release: bump image to ${IMAGE_NAME}:${env.APP_VERSION} [skip ci]"
+                        git push https://github.com/sasow/immo-app.git main
+                    """
+                }
+                echo "✅ Manifests mis à jour sur GitHub"
+                echo "⏳ ArgoCD va détecter le changement et déployer automatiquement"
+            }
+        }
+        
+        stage('Create GitHub Release') {
+            steps {
+                echo "🏷️ Création d'une release GitHub..."
+                script {
+                    sh """
+                        git tag -a ${env.APP_VERSION} -m "Release ${env.APP_VERSION}"
+                        git push origin ${env.APP_VERSION}
+                    """
+                }
+                echo "✅ Release GitHub créée: ${env.APP_VERSION}"
             }
         }
     }
@@ -74,28 +114,20 @@ pipeline {
                 ✅ PIPELINE RÉUSSI !
                 ════════════════════════════════════════════════════════════════
                 
-                🌐 Application : http://${IP}:30080
-                🌐 Jenkins : http://${IP}:8080
-                🌐 ArgoCD : https://${IP}:30443
+                📦 Version: ${env.APP_VERSION}
+                🐳 Image: ${IMAGE_NAME}:${env.APP_VERSION}
+                
+                📝 Manifests mis à jour sur GitHub
+                ⏳ ArgoCD va déployer automatiquement (1-2 minutes)
+                
+                🌐 Application: http://${IP}:30080
                 
                 ════════════════════════════════════════════════════════════════
                 """
             }
         }
         failure {
-            echo """
-            ════════════════════════════════════════════════════════════════
-            ❌ PIPELINE ÉCHOUÉ
-            ════════════════════════════════════════════════════════════════
-            
-            Vérifiez les logs ci-dessus.
-            
-            Commandes de diagnostic :
-            - docker images
-            - docker ps
-            - kubectl get pods -n immo-app
-            ════════════════════════════════════════════════════════════════
-            """
+            echo "❌ PIPELINE ÉCHOUÉ - Vérifiez les logs"
         }
     }
 }

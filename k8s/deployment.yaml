@@ -1,8 +1,11 @@
+# k8s/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: immo-app
   namespace: immo-app
+  labels:
+    app: immo-app
 spec:
   replicas: 2
   selector:
@@ -12,17 +15,21 @@ spec:
     metadata:
       labels:
         app: immo-app
+      annotations:
+        # Annoter avec la version pour traçabilité
+        version: "1.0.0"
+        build-date: "2024-03-27T22:00:00Z"
     spec:
       containers:
       - name: immo-app
-        image: sasow/immo-app:latest
+        image: sasow/immo-app:1.0.0   # ← Ce tag sera mis à jour par Jenkins
         imagePullPolicy: Always
         ports:
         - containerPort: 80
         resources:
           requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
             memory: "128Mi"
             cpu: "100m"
-          limits:
-            memory: "256Mi"
-            cpu: "200m"
