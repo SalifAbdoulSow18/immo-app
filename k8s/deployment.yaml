@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: immo-app
-        image: sasow/immo-app:1.0.12
+        image: sasow/immo-app:1.0.13
         imagePullPolicy: Always
         ports:
         - containerPort: 80
