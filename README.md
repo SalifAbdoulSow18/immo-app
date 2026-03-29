@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=28&duration=3000&pause=1000&color=667EEA&center=true&vCenter=true&width=435&lines=%F0%9F%8E%9F%EF%B8%8F+Application+Immobilière;%F0%9F%87%B8%F0%9F%87%B3+Made+in+Senegal;%F0%9F%91%A8%F0%9F%8F%BD%E2%80%8D%F0%9F%92%BB+by+SAS_DEVOPS" alt="Typing SVG" />
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=28&duration=4000&pause=500&color=42b983&center=true&vCenter=true&width=600&lines=%F0%9F%8F%A0+ImmoApp+S%C3%A9n%C3%A9gal;%F0%9F%8F%9E%EF%B8%8F+Application+immobili%C3%A8re+moderne;%F0%9F%87%B8%F0%9F%87%B3+Made+in+Senegal;%F0%9F%91%A8%F0%9F%8F%BD%E2%80%8D%F0%9F%92%BB+by+Salif;%F0%9F%94%A5+CI%2FCD+Jenkins+%2B+k3s+%2B+ArgoCD;%F0%9F%90%B3+Docker+%2B+Kubernetes;%F0%9F%92%BE+Vue.js+3+%2B+Pinia;%F0%9F%93%8D+Almadies%2C+Dakar" alt="ImmoApp Sénégal" />
 </div>
 
 # 🏠 ImmoApp Sénégal - Application Immobilière
