@@ -1,28 +1,17 @@
-immo-app/
-├── src/
-│   ├── components/
-│   │   ├── PropertyCard.vue   # Carte d'une propriété
-│   │   ├── PropertyList.vue   # Liste des propriétés
-│   │   └── PropertyFilter.vue # Filtres de recherche
-│   ├── views/
-│   │   ├── HomeView.vue
-│   │   ├── PropertiesView.vue  # Liste des biens
-│   │   └── PropertyDetail.vue  # Détail d'un bien
-│   ├── stores/
-│   │   ├── properties.js       # Gestion des propriétés
-│   │   └── favorites.js        # Gestion des favoris
-│   ├── data/
-│   │   └── properties.js       # Catalogue des biens
-│   ├── router/
-│   │   └── index.js            # Configuration des routes
-│   ├── App.vue                 # Composant racine
-│   └── main.js                 # Point d'entrée 
-└── index.html
-
+<div align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=28&duration=3000&pause=1000&color=667EEA&center=true&vCenter=true&width=435&lines=%F0%9F%8E%9F%EF%B8%8F+Application+Immobilière;%F0%9F%87%B8%F0%9F%87%B3+Made+in+Senegal;%F0%9F%91%A8%F0%9F%8F%BD%E2%80%8D%F0%9F%92%BB+by+SAS_DEVOPS" alt="Typing SVG" />
+</div>
 
 # 🏠 ImmoApp Sénégal - Application Immobilière
 
+[![Jenkins](https://img.shields.io/badge/Jenkins-CI/CD-blue?logo=jenkins)](https://www.jenkins.io/)
+[![ArgoCD](https://img.shields.io/badge/ArgoCD-GitOps-orange?logo=argo)](https://argo-cd.readthedocs.io/)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-k3s-blue?logo=kubernetes)](https://k3s.io/)
+[![Docker](https://img.shields.io/badge/Docker-Container-blue?logo=docker)](https://www.docker.com/)
+[![Vue.js](https://img.shields.io/badge/Vue.js-3.x-green?logo=vue.js)](https://vuejs.org/)
+
 Application web moderne de recherche immobilière dédiée au marché sénégalais. Trouvez, filtrez et sauvegardez vos propriétés préférées en toute simplicité.
+
 
 ## 📋 Table des matières
 
@@ -55,153 +44,6 @@ Application web moderne de recherche immobilière dédiée au marché sénégala
 
 ## 🏗 Architecture CI/CD
 
-┌─────────────────────────────────────────────────────────────────────────────────────┐
-│                              ARCHITECTURE CI/CD COMPLÈTE                            │
-│                                   ImmoApp Sénégal                                   │
-└─────────────────────────────────────────────────────────────────────────────────────┘
-
-                                    ┌─────────────────┐
-                                    │   DÉVELOPPEUR   │
-                                    │   (Votre PC)    │
-                                    └────────┬────────┘
-                                             │ git push
-                                             ▼
-┌─────────────────────────────────────────────────────────────────────────────────────┐
-│                              📦 SOURCE CODE MANAGEMENT                              │
-├─────────────────────────────────────────────────────────────────────────────────────┤
-│                                                                                     │
-│                              ┌─────────────────────┐                                │
-│                              │       GITHUB       │                                │
-│                              │  SalifAbdoulSow18/ │                                │
-│                              │     immo-app       │                                │
-│                              └──────────┬──────────┘                                │
-│                                         │                                          │
-│                              ┌──────────┴──────────┐                               │
-│                              │                     │                               │
-│                              ▼                     ▼                               │
-│                    ┌─────────────────┐   ┌─────────────────┐                        │
-│                    │    Code source  │   │   Manifests    │                        │
-│                    │   (Vue.js)      │   │   Kubernetes   │                        │
-│                    │   Dockerfile    │   │   (k8s/*.yaml) │                        │
-│                    │   Jenkinsfile   │   │   VERSION      │                        │
-│                    └─────────────────┘   └─────────────────┘                        │
-│                                                                                     │
-└─────────────────────────────────────────────────────────────────────────────────────┘
-                                             │
-                              ┌──────────────┴──────────────┐
-                              │        Webhook (push)        │
-                              ▼                              ▼
-┌─────────────────────────────────────────────────────────────────────────────────────┐
-│                              🔧 CONTINUOUS INTEGRATION                              │
-├─────────────────────────────────────────────────────────────────────────────────────┤
-│                                                                                     │
-│                           ┌─────────────────────────┐                               │
-│                           │        JENKINS          │                               │
-│                           │   http://84.247.132.116:8080                           │
-│                           └────────────┬────────────┘                               │
-│                                        │                                            │
-│                    ┌───────────────────┴───────────────────┐                        │
-│                    │                                       │                        │
-│                    ▼                                       ▼                        │
-│         ┌─────────────────────┐               ┌─────────────────────┐               │
-│         │    Stage: Checkout  │               │   Stage: Read       │               │
-│         │    (git pull)       │──────────────▶│   Version          │               │
-│         └─────────────────────┘               │   (VERSION file)   │               │
-│                                               └─────────────────────┘               │
-│                    │                                       │                        │
-│                    ▼                                       ▼                        │
-│         ┌─────────────────────┐               ┌─────────────────────┐               │
-│         │    Stage: Build     │               │   Stage: Push       │               │
-│         │    Docker Image     │──────────────▶│   Docker Hub       │               │
-│         │    (docker build)   │               │   (docker push)    │               │
-│         └─────────────────────┘               └─────────────────────┘               │
-│                    │                                       │                        │
-│                    ▼                                       ▼                        │
-│         ┌─────────────────────┐               ┌─────────────────────┐               │
-│         │    Stage: Update    │               │   Stage: Create     │               │
-│         │    Manifests        │──────────────▶│   GitHub Release   │               │
-│         │    (k8s/*.yaml)     │               │   (git tag)        │               │
-│         └─────────────────────┘               └─────────────────────┘               │
-│                                                                                     │
-└─────────────────────────────────────────────────────────────────────────────────────┘
-                                             │
-                                             │ git push (manifests mis à jour)
-                                             ▼
-┌─────────────────────────────────────────────────────────────────────────────────────┐
-│                              🐳 CONTAINER REGISTRY                                  │
-├─────────────────────────────────────────────────────────────────────────────────────┤
-│                                                                                     │
-│                           ┌─────────────────────────┐                               │
-│                           │      DOCKER HUB         │                               │
-│                           │   sasow/immo-app       │                               │
-│                           └────────────┬────────────┘                               │
-│                                        │                                            │
-│                    ┌───────────────────┴───────────────────┐                        │
-│                    │                                       │                        │
-│                    ▼                                       ▼                        │
-│         ┌─────────────────────┐               ┌─────────────────────┐               │
-│         │  sasow/immo-app:    │               │  sasow/immo-app:    │               │
-│         │  1.0.0              │               │  latest             │               │
-│         └─────────────────────┘               └─────────────────────┘               │
-│                                                                                     │
-└─────────────────────────────────────────────────────────────────────────────────────┘
-                                             │
-                                             │ ArgoCD détecte le changement
-                                             ▼
-┌─────────────────────────────────────────────────────────────────────────────────────┐
-│                              🎨 CONTINUOUS DELIVERY                                 │
-├─────────────────────────────────────────────────────────────────────────────────────┤
-│                                                                                     │
-│                           ┌─────────────────────────┐                               │
-│                           │        ARGOCD           │                               │
-│                           │   https://84.247.132.116:30443                         │
-│                           └────────────┬────────────┘                               │
-│                                        │                                            │
-│                              ┌─────────┴─────────┐                                  │
-│                              │                   │                                  │
-│                              ▼                   ▼                                  │
-│                    ┌─────────────────┐   ┌─────────────────┐                        │
-│                    │   Sync Policy   │   │   Auto-Sync    │                        │
-│                    │   Automated     │   │   Prune: true  │                        │
-│                    │   Self-Heal     │   │   Self-Heal    │                        │
-│                    └─────────────────┘   └─────────────────┘                        │
-│                                                                                     │
-└─────────────────────────────────────────────────────────────────────────────────────┘
-                                             │
-                                             │ kubectl apply
-                                             ▼
-┌─────────────────────────────────────────────────────────────────────────────────────┐
-│                              ☸️ ORCHESTRATION                                       │
-├─────────────────────────────────────────────────────────────────────────────────────┤
-│                                                                                     │
-│                           ┌─────────────────────────┐                               │
-│                           │          k3s            │                               │
-│                           │   Kubernetes Cluster   │                               │
-│                           └────────────┬────────────┘                               │
-│                                        │                                            │
-│         ┌──────────────────────────────┼──────────────────────────────┐             │
-│         │                              │                              │             │
-│         ▼                              ▼                              ▼             │
-│ ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐                    │
-│ │   Namespace     │    │   Deployment    │    │    Service      │                    │
-│ │   immo-app      │    │   immo-app      │    │ immo-app-service│                    │
-│ │                 │    │   replicas: 2   │    │   NodePort      │                    │
-│ └─────────────────┘    └─────────────────┘    │   30080         │                    │
-│                                               └─────────────────┘                    │
-│                                                                                     │
-└─────────────────────────────────────────────────────────────────────────────────────┘
-                                             │
-                                             ▼
-┌─────────────────────────────────────────────────────────────────────────────────────┐
-│                              🚀 APPLICATION                                         │
-├─────────────────────────────────────────────────────────────────────────────────────┤
-│                                                                                     │
-│                           ┌─────────────────────────┐                               │
-│                           │     IMMOAPP SÉNÉGAL     │                               │
-│                           │   http://84.247.132.116:30080                          │
-│                           └─────────────────────────┘                               │
-│                                                                                     │
-└─────────────────────────────────────────────────────────────────────────────────────┘
 
 ### Flux détaillé
 
