@@ -238,3 +238,64 @@ Pod en CrashLoopBackOff
 
 Deploiement de l'application sur ArgoCD
   kubectl apply -f https://raw.githubusercontent.com/VOTRE_USERNAME_GITHUB/immo-app/main/argocd/application.yaml
+
+
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                         ARCHITECTURE CODE RÉELLE - IMMOAPP SÉNÉGAL                  │
+│                                  (Ce qui a été utilisé)                             │
+└─────────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                              📁 STRUCTURE SIMPLIFIÉE                                │
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                     │
+│  immo-app/                                                                          │
+│  │                                                                                  │
+│  ├── 📄 VERSION                          # 1.0.0 (version sémantique)              │
+│  ├── 📄 Dockerfile                       # Build image Node.js 22 + Nginx           │
+│  ├── 📄 nginx.conf                       # Configuration Nginx (sans backend)       │
+│  ├── 📄 Jenkinsfile                      # Pipeline CI/CD complet                   │
+│  ├── 📄 package.json                     # Dépendances Vue.js                       │
+│  ├── 📄 package-lock.json                # Lock des dépendances                     │
+│  ├── 📄 .gitignore                       # Exclusions Git                           │
+│  ├── 📄 .dockerignore                    # Exclusions Docker                         │
+│  │                                                                                  │
+│  ├── 📁 src/                             # CODE SOURCE VUE.JS                       │
+│  │   │                                                                              │
+│  │   ├── 📁 components/                  # COMPOSANTS VUE                           │
+│  │   │   ├── 📄 PropertyCard.vue         # Carte d'une propriété                    │
+│  │   │   ├── 📄 PropertyList.vue         # Liste des propriétés                     │
+│  │   │   └── 📄 PropertyFilter.vue       # Filtres de recherche                     │
+│  │   │                                                                              │
+│  │   ├── 📁 views/                       # PAGES DE L'APPLICATION                   │
+│  │   │   ├── 📄 HomeView.vue             # Page d'accueil                           │
+│  │   │   ├── 📄 PropertiesView.vue       # Liste des biens                          │
+│  │   │   └── 📄 PropertyDetail.vue       # Détail d'un bien (avec galerie)          │
+│  │   │                                                                              │
+│  │   ├── 📁 stores/                      # PINIA STORES                             │
+│  │   │   ├── 📄 properties.js            # Gestion des propriétés + filtres         │
+│  │   │   └── 📄 favorites.js             # Gestion des favoris (localStorage)       │
+│  │   │                                                                              │
+│  │   ├── 📁 data/                        # DONNÉES STATIQUES                        │
+│  │   │   └── 📄 properties.js            # Propriétés Sénégal (images Pexels)       │
+│  │   │                                                                              │
+│  │   ├── 📁 router/                      # VUE ROUTER                               │
+│  │   │   └── 📄 index.js                 # Routes: /, /properties, /property/:id    │
+│  │   │                                                                              │
+│  │   ├── 📁 utils/                       # UTILITAIRES                              │
+│  │   │   ├── 📄 constants.js             # Types de biens, statuts                  │
+│  │   │   └── 📄 helpers.js               # formatPrice(), formatDate(), etc.        │
+│  │   │                                                                              │
+│  │   ├── 📄 App.vue                      # Composant racine (navbar + router-view)  │
+│  │   ├── 📄 main.js                      # Point d'entrée (Pinia + Router)          │
+│  │   └── 📄 style.css                    # Styles globaux                           │
+│  │                                                                                  │
+│  ├── 📁 k8s/                             # MANIFESTS KUBERNETES                     │
+│  │   ├── 📄 namespace.yaml               # Namespace immo-app                       │
+│  │   ├── 📄 deployment.yaml              # Déploiement (2 replicas)                 │
+│  │   └── 📄 service.yaml                 # Service NodePort 30080                   │
+│  │                                                                                  │
+│  └── 📁 argocd/                          # CONFIGURATION ARGOCD                     │
+│      └── 📄 application.yaml             # Application ArgoCD (GitOps)              │
+│                                                                                     │
+└─────────────────────────────────────────────────────────────────────────────────────┘
